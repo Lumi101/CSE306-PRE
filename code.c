@@ -3,10 +3,36 @@
 // #include <string.h>
 
 
+struct CSV(
+    Node *header
+    Node *rows;
+    int num_fields;
+    int num_rows;
+    )CSV;
 
-void f() {}
+void f(int header) {
+   
+}
 
-void r() {}
+int r(char *csv_file) {
+    //can handle header in here. include an int has_header
+    FILE *file = fopen(csv_file, "r" );
+    if(!file){
+        return 0;
+    }
+
+    int ch, count = 0;
+    int ch = fgetc(file);
+    while(ch != EOF) {
+        if(ch == '\n') {
+            count++;
+        }
+    }
+    fclose(file);
+    //if there is a header. count-- . can handle has_header in main. 
+
+    printf("%d\n", count);
+}
 
 void h() {}
 

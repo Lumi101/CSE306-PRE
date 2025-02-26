@@ -1,22 +1,19 @@
 #include <stdlib.h>
-<<<<<<< HEAD
-=======
- #include <stdio.h>
- #include <string.h>
+#include <stdio.h>
+#include <string.h>
 #include <std.bool>
- struct  LLNode { 
+
+struct  LLNode { 
 char arg ; 
 char *string ;
 char *value ;  
 struct LLNode *next ; } 
-LLNode ; 
->>>>>>> parseargs
 
 void f(int header) {
    
 }
 
-int r(char *csv_file) {
+int r(char *csv_file, int header) {
     //can handle header in here. include an int has_header
     FILE *file = fopen(csv_file, "r" );
     if(!file){
@@ -30,8 +27,12 @@ int r(char *csv_file) {
             count++;
         }
     }
+
     fclose(file);
-    //if there is a header. count-- . can handle has_header in main. 
+    //if there is a header. count-- . can handle has_header in main.
+    if(header){
+        count--;
+    }
 
     printf("%d\n", count);
 }
@@ -48,13 +49,14 @@ void records() {}
 
 void call_command(char command,char csv) {
 
-} 
-LLNode* parse_args(int argc, char *argv[]) { 
-LLNode *head = NULL ; 
-LLNode *tail = NULL ; 
-LLNode *tmp_node = NULL ; 
+}
+
+struct LLNode* parse_args(int argc, char *argv[]) { 
+struct LLNode *head = NULL ; 
+struct LLNode *tail = NULL ; 
+struct LLNode *tmp_node = NULL ; 
 for  (int i = 1 ; i < argc -1 ; i++ ){ 
-tmp_node = (LLNode*) malloc(sizeof(LLNode)) ; 
+struct tmp_node = (LLNode*) malloc(sizeof(struct LLNode)) ; 
 tmp_node -> arg = '\0' ; 
 tmp_node -> string = NULL ; 
 tmp_node -> value = NULL ;  
@@ -127,10 +129,11 @@ tail ->next = tmp_node ;
 tail = tmp_node ; } 
 }
 return head ; }}
+
 int main(int argc, char *argv[]) {
     char *csv_file = argv[argc-1];
     LLNode *node = NULL ; 
-    LLNode (head = parse_args(argc,argv) ;   
+    LLNode *head = parse_args(argc,argv) ;   
     // create helper function to read csv file
      // might need to modify the way we're reading arguments
 

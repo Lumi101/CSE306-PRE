@@ -25,7 +25,55 @@ void mean() {}
 
 void records() {}
 
-void call_command(char command, char *csv_file) {
+void call_command(LLNode *head, char *csv_filename) {
+ FILE *csv_file = fopen(csv_filename, "r");
+
+    FILE *csv_file = fopen(csv_filename, "r");
+    if (csv_file == NULL) {
+     fprintf(stderr, "Error file: %s\n", csv_filename);
+        exit(EXIT_FAILURE);
+    }
+    //check for header flag
+    bool has_header = false;
+    LLNode *current = head;
+    while (current != NULL) {
+        if (current->arg == 'h') {
+  has_header = true;
+  break;
+        }
+        current = current->next;
+    }
+   
+    current = head;
+    while (current != NULL) {
+        switch(current->arg) {
+            case 'f':
+              f(csv_file);
+                break;
+            case 'r':
+       r(csv_file, has_header);
+                break;
+            case 'h':
+          h();  
+                break;
+            case 'x': // For -max
+                max(csv_file, current->string, has_header);
+                break;
+            case 'n': // For -min
+                min(csv_file, current->string, has_header);
+                break;
+            case 'm': // For -mean
+                mean(csv_file, current->string, has_header);
+                break;
+            case 'c': // For -records
+                records(csv_file, current->string, current->value, has_header);
+                break;
+
+      rewind(csv_file);
+        current = current->next;
+    }
+    
+    fclose(csv_file);
 }
 
 // void csv_file_reader(char csv_file) {}

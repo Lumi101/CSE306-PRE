@@ -12,31 +12,31 @@ struct  LLNode {
 
 
 void f(FILE *csv) {
-printf("\n f called\n") ; }
+printf("f called") ; }
 
 void r(FILE *csv_file, bool header ) {
-printf("\n r called\n") ; 
+printf("r called") ; 
 }
 
 void h() {
-printf("\n h called\n") ; 
+printf("h called") ; 
 }
 
 void max( FILE *csv, char *field,bool header) {
-printf("\n max  called\n " ) ; 
+printf("max called " ) ; 
 }
 
 void min(FILE *csv, char *field, bool header) {
-printf("\n min called\n") ; }
+printf("min called") ; }
 
 void mean(FILE *csv, char *field, bool header) {
-printf("\n mean  called\n") ; 
+printf("mean called") ; 
 
 }
 
 void records(FILE *csv, char *field, char *val, bool header) 
 {
-printf("\n records called\n") ; 
+printf("records called") ; 
 }
 
 void call_command(struct LLNode *head, char *csv) {
@@ -80,16 +80,14 @@ void call_command(struct LLNode *head, char *csv) {
             case 'R': // For -records
                 records(csv_file, current->string, current->value, has_header);
                 break;
-	default : 
-		printf("Unknown arg") ; 
-break ; } 
+
       rewind(csv_file);
         current = current->next;
     }
     
     fclose(csv_file);
 }
-
+}
 // void csv_file_reader(char csv_file) {}
 
 struct LLNode* parse_args(int argc, char *argv[]) {

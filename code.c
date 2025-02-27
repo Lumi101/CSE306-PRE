@@ -26,6 +26,7 @@ int r(char *csv_file, int header) {
         if(ch == '\n') {
             count++;
         }
+        ch = fgetc(file);
     }
 
     fclose(file);
@@ -35,9 +36,13 @@ int r(char *csv_file, int header) {
     }
 
     printf("%d\n", count);
+    return count;
 }
 
-void h() {}
+void h(char *csv_file) {
+    FILE *file = fopen(csv_file, "r");
+    
+}
 
 void max() {}
 

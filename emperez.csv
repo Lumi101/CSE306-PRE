@@ -1,0 +1,6 @@
+ DATE        UBIT      DURATION    ACTIVITY & TOOL DESCRIPTION
+2025/02/25   emperez  2 hours   met with team to lay ground work for project and create gameplan
+ 2025/02/25  emperez  3 hours   created code for parsing logic to store args in LL
+2025/02/26   emperez  2 hours   worked with team to create plan for logic to handle different arguements given
+2025/02/26   emperez  3 hours   created function call_command to handle each different arguement and call respective functions 
+2024/02/27   emperez  2 hours   bug fixed call_command and parse_args functions and added print statements to each sub function for testing.

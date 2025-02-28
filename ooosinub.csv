@@ -1,4 +1,6 @@
 DATE            UBIT        DURATION       ACTIVITY & TOOL DESCRIPTION
 2025/02/24      ooosinub    1 hour         created github repo. created and edited code.c, laying groundwork for future implementation of the main and helper functions
 2025/02/25      ooosinub    2 hours        further developed the groundwork of our project. created seperated branches such as pelumi and tests (to help test and code without                                             affecting the main branch.)
-2025/02/26      ooosinub                   started writing helper functions. wrote code for 'r' function. help fixed struct codes.
+2025/02/26      ooosinub    4 hours        started writing helper functions. wrote code for 'r' function. help fixed struct codes.
+2025/02/27      ooosinub    3 hours        wrote the h function and a fucntion to get field index.
+2025/02/28      ooosinub                   did testing and fixed bugs

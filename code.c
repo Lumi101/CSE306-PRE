@@ -39,9 +39,87 @@ int r(char *csv_file, int header) {
     return count;
 }
 
-void h(char *csv_file) {
-    FILE *file = fopen(csv_file, "r");
+void h(char *csv_file, struct LLNode *header) {
+    int ch;
+    struct LLNode *head = NULL;
+    struct LLNode *tail = NULL;
+    int capacity = 128;
+    char *buffer = malloc(capacity * sizeof(char));
+    int length = 0;
+
+    //Read header field character by character
+    while((ch = fgetc(file)) != EOF){
+        if(ch == '\n' | ch == ','){
+            //Terminate the current field string
+            buffer[length] = '\0';
+            
+            //Allocate a new node for the header file
+            struct LLNode *newNode = malloc(sizeof(struct LLNode *newNode));
+
+        newNode->arg = 'h';
+        newNode->next = NULL;
+
+        newNode->string = malloc(length + 1);
+        if(!newNode->string){
+            exit(EXIT_FAILURE);
+        }
+
+        for(int i = 0; i <= length; i++){
+            newNode->string[i] = buffer[i];
+        }
+
+        if(head == NULL){
+            head = newNode;
+            tail = newNode;
+        } else{
+            tail->next = newNode;
+            tail = newNode;
+        }
+
+        //Reset length for the next field
+        length = 0;
+
+        if(ch == '\n'){
+            break;  //End of header row
+        }
+        continue;
+        }
+        
+        //Expand buffer if needed
+        if(length + 1 >= capacity){
+            capacity *= 2;
+            buffer = realloc(buffer, capacity);
+            if(!buffer){
+                exit(EXIT_FAILURE);
+            }
+        }
+        buffer[length++] = ch;
+    }
+    free(buffer);
     
+    if(head == NULL){
+        exit(EXIT_FAILURE);
+    }
+
+    *header = head;
+        
+   }
+
+int get_field_index(struct LLNode *header, char name ){
+    struct LLNode *current = header;
+    int index = 0;
+
+    while(current != NULL){
+        if(strcmp(current->string, name) == 0){
+            return index;
+    
+        }
+        index++;
+        current = current->next;
+    }
+
+    exit(EXIT_FAILURE);
+
 }
 
 void max() {}
@@ -135,7 +213,7 @@ tail = tmp_node ; }
 }
 return head ; }}
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]){
     char *csv_file = argv[argc-1];
     LLNode *node = NULL ; 
     LLNode *head = parse_args(argc,argv) ;   
@@ -144,7 +222,7 @@ int main(int argc, char *argv[]) {
 
         // i goes to argc-1 because all we want to get are the commands passed in
 
-     }
+     
       // call helper function that compares the entry to a some expected characters, and returns...
         // get a return value
 
@@ -152,6 +230,6 @@ int main(int argc, char *argv[]) {
 
 
         // return EXIT_FAILURE
-    }
+    
     return EXIT_SUCCESS;
 }

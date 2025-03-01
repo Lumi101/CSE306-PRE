@@ -41,6 +41,98 @@ int get_column_index(const char *header_line, const char *field_name) {
     return -1; // Not found
 }
 
+void find_min_max_avg(FILE *csv, char *field,bool header,double init_value, char op ){
+    char buffer[1024] ;
+    char *tkn ;
+    int c_index = -1 ;
+    // double min,max,sum = 0.0;
+    double min = 0.0;
+    double max = 0.0;
+    double sum = 0.0;
+    int ct = 0 ;
+    //bool frow = true ;
+    bool found = false ;
+    //bool is_num = true ;
+    rewind(csv) ;
+    while (fgets(buffer,sizeof(buffer),csv)) //read input from line and store in buffer
+    {
+        tkn = strtok(buffer, ",") ; //split csv by ','
+        int column = 0 ;
+        if(header) {
+            while(tkn) // while there is data to split
+            {
+                if(strcmp(tkn,field)==0){
+                    c_index = column ;
+                    break ;
+                }
+                tkn = strtok(NULL, ",") ;
+                column ++ ;
+
+            }
+            header = false ;
+            continue ;
+
+        }
+        if(!header && c_index ==-1){
+            c_index = atoi(field) ; //means no name given, use numeric value instead
+            if(0>c_index){
+                printf("Bad index") ;
+                exit(EXIT_FAILURE) ;
+            }
+
+        }
+        if(c_index == -1 ){
+            exit(EXIT_FAILURE) ;
+        }
+        tkn = strtok(buffer, ",") ;
+        column = 0 ;
+        while(tkn){
+            if(column == c_index){
+                char *a ;
+                double val = strtod(tkn,&a) ;
+                if(a == tkn){
+                    //is_num = false ;
+                    break ;
+                }else {
+                    //is_num = true ;
+                }
+                if(!found){
+                    min = max = val ;
+                    found = true ;
+                }
+                if(val < min){
+                    min = val ;
+                }else if (val>max)
+                {
+                    max = val ;
+                }
+
+                sum += val ;
+                ct ++;
+
+            }
+            tkn = strtok(NULL, ",") ;
+            column ++ ;
+
+        }
+
+    }
+
+    if(op == 'm'){
+        printf("%lf\n",min) ;
+    }
+    if(op == 'x'){
+        printf("%lf\n",max) ;
+
+    }
+    if(op == 'a' && ct>0){
+        printf("%lf\n",sum/ct) ;
+    }
+
+}
+
+
+
 void f(FILE *open_csv_file) {
     printf("\n f called\n") ;
     char a_line[MAXI_LINE_LENGTH];
@@ -62,23 +154,21 @@ void f(FILE *open_csv_file) {
 
 }
 
-int r(char *csv_file, int header) {
+int r(FILE *csv_file, bool header) {
     //can handle header in here. include an int has_header
-    FILE *file = fopen(csv_file, "r" );
-    if(!file){
-        return 0;
+    // FILE *file = (csv_file, "r" );
+    if(csv_file != NULL){
+        return EXIT_FAILURE;
     }
-
     int count = 0;
-    int ch = fgetc(file);
+    int ch = fgetc(csv_file);
     while(ch != EOF) {
         if(ch == '\n') {
             count++;
         }
-        ch = fgetc(file);
+        ch = fgetc(csv_file);
     }
-
-    fclose(file);
+    fclose(csv_file);
     //if there is a header. count-- . can handle has_header in main.
     if(header){
         count--;
@@ -88,7 +178,7 @@ int r(char *csv_file, int header) {
     return count;
 }
 
-void h(char *csv_file, struct LLNode *header) {
+void h(FILE *csv_file, struct LLNode **header) {
     int ch;
     struct LLNode *head = NULL;
     struct LLNode *tail = NULL;
@@ -97,11 +187,11 @@ void h(char *csv_file, struct LLNode *header) {
     int length = 0;
 
     //Read header field character by character
-    while((ch = fgetc(file)) != EOF){
-        if(ch == '\n' | ch == ','){
+    while((ch = fgetc(csv_file)) != EOF){
+        if(ch == '\n' || ch == ','){
             //Terminate the current field string
             buffer[length] = '\0';
-            
+
             //Allocate a new node for the header file
             // struct LLNode *newNode = malloc(sizeof(struct LLNode *newNode));
             struct LLNode *newNode = malloc(sizeof(struct LLNode));
@@ -110,7 +200,7 @@ void h(char *csv_file, struct LLNode *header) {
         newNode->next = NULL;
 
         newNode->string = malloc(length + 1);
-        if(!newNode->string){
+        if(newNode->string != NULL){
             exit(EXIT_FAILURE);
         }
 
@@ -134,26 +224,27 @@ void h(char *csv_file, struct LLNode *header) {
         }
         continue;
         }
-        
+
         //Expand buffer if needed
         if(length + 1 >= capacity){
             capacity *= 2;
-            buffer = realloc(buffer, capacity);
-            if(!buffer){
+            char* tmp = realloc(buffer, capacity);
+            if(tmp !=NULL){
+                free(tmp);
                 exit(EXIT_FAILURE);
+            }
+            buffer = tmp;
             }
         }
         buffer[length++] = ch;
-    }
-    free(buffer);
     
-    if(head == NULL){
+    free(buffer);
+
+    if (head == NULL){
         exit(EXIT_FAILURE);
     }
-
     *header = head;
-        
-   }
+}
 
 int get_field_index(struct LLNode *header, char name ){
     struct LLNode *current = header;
@@ -162,7 +253,7 @@ int get_field_index(struct LLNode *header, char name ){
     while(current != NULL){
         if(strcmp(current->string, name) == 0){
             return index;
-    
+
         }
         index++;
         current = current->next;
@@ -172,17 +263,16 @@ int get_field_index(struct LLNode *header, char name ){
 
 }
 
-void max( FILE *csv, char *field,bool header) {
-    printf("\n max  called\n " ) ;
-}
-
-void min(FILE *csv, char *field, bool header) {
-    printf("\n min called\n") ; }
-
-void mean(FILE *csv, char *field, bool header) {
-    printf("\n mean  called\n") ;
-
-}
+// void max( FILE *csv, char *field,bool header) {
+//     printf("\n max  called\n " ) ;
+// }
+//
+// void min(FILE *csv, char *field, bool header) {
+//     printf("\n min called\n") ; }
+//
+// void mean(FILE *csv, char *field, bool header) {
+//     printf("\n mean  called\n") ;
+// }
 
 // Function to find and print records where a specific field contains the value
 void records(FILE *open_csv_file, char *field, char *val, bool header) {
@@ -269,14 +359,23 @@ void call_command(struct LLNode *head, char *csv) {
             case 'h':
                 h(csv_file, has_header);
             break;
+            // case 'x': // For -max
+            //     max(csv_file, current->string, has_header);
+            // break;
+            // case 'm': // For -min
+            //     min(csv_file, current->string, has_header);
+            // break;
+            // case 'a': // For -mean
+            //     mean(csv_file, current->string, has_header);
             case 'x': // For -max
-                max(csv_file, current->string, has_header);
+                find_min_max_avg(csv_file,current->string,has_header,0.0,'x') ;
             break;
             case 'm': // For -min
-                min(csv_file, current->string, has_header);
+                find_min_max_avg(csv_file,current->string,has_header,0.0,'m') ;
             break;
             case 'a': // For -mean
-                mean(csv_file, current->string, has_header);
+                find_min_max_avg(csv_file,current->string,has_header,0.0,'a') ;
+            // mean(csv_file, current->string, has_header);
             break;
             case 'R': // For -records
                 records(csv_file, current->string, current->value, has_header);
@@ -292,17 +391,16 @@ void call_command(struct LLNode *head, char *csv) {
 }
 
 // void csv_file_reader(char csv_file) {}
-
 struct LLNode* parse_args(int argc, char *argv[]) {
-    struct  LLNode *head = NULL ;
-    struct  LLNode *tail = NULL ;
-    struct  LLNode *tmp_node = NULL ;
+   struct  LLNode *head = NULL ;
+   struct  LLNode *tail = NULL ;
+   struct  LLNode *tmp_node = NULL ;
     for  (int i = 1 ; i < argc -1 ; i++ ){
         tmp_node = ( struct LLNode*) malloc(sizeof( struct LLNode)) ;
         tmp_node -> arg = '\0' ;
         tmp_node -> string = NULL ;
         tmp_node -> value = NULL ;
-        tmp_node ->next = NULL ;
+    tmp_node ->next = NULL ; 
         if (strcmp(argv[i],"-f") == 0 ) {
             tmp_node ->arg = 'f' ; }
         if(strcmp(argv[i],"-r")== 0) {
@@ -321,7 +419,7 @@ struct LLNode* parse_args(int argc, char *argv[]) {
                 i++ ;
             }else
             {
-                free(tmp_node) ;
+        free(tmp_node) ; 
                 printf("Max requires another arguement\n") ;
                 exit(EXIT_FAILURE) ;
             }
@@ -333,7 +431,7 @@ struct LLNode* parse_args(int argc, char *argv[]) {
                 i++ ;
 
             } else {
-                free(tmp_node) ;
+        free(tmp_node) ; 
                 printf("min requires another arguement\n") ;
                 exit(EXIT_FAILURE) ; }
         }
@@ -345,9 +443,9 @@ struct LLNode* parse_args(int argc, char *argv[]) {
                 tmp_node ->string = argv[ i+ 1] ;
                 i++; }
             else {
-                    free(tmp_node) ;
-                    printf("Mean needs another arguement\n") ;
-                    exit(EXIT_FAILURE) ; }
+        free(tmp_node) ; 
+                printf("Mean needs another arguement\n") ;
+                exit(EXIT_FAILURE) ; }
         }
         if (strcmp(argv[i], "-records") == 0) {
             if ( i + 2 < argc -1 ) {
@@ -356,7 +454,7 @@ struct LLNode* parse_args(int argc, char *argv[]) {
                 tmp_node ->value = argv[i+ 2 ] ;
                 i += 2 ;  }
             else {
-                free(tmp_node) ;
+        free(tmp_node) ; 
                 printf("Records requires field and value\n");
                 exit(EXIT_FAILURE);}
         }
@@ -364,7 +462,7 @@ struct LLNode* parse_args(int argc, char *argv[]) {
         //no match found handle case
         if (tmp_node->arg == '\0'){
             printf("UNKNOWN FIELD: %s\n", argv[i]) ;
-            free(tmp_node) ;
+        free(tmp_node) ; 
             exit(EXIT_FAILURE) ;  }
         if(head == NULL) {
             head = tmp_node ;
@@ -375,6 +473,7 @@ struct LLNode* parse_args(int argc, char *argv[]) {
     }
     return head ;
 }
+
 
 void free_list(struct LLNode *head) {
     struct LLNode *node = head ;
@@ -403,3 +502,5 @@ int main(int argc, char *argv[]) {
     //call_command(*argv[i], csv_file); the function call
     // call helper function that compares the entry to a some expected chara
 }
+
+
